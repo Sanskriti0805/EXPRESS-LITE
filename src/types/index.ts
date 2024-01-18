@@ -1,4 +1,4 @@
-export enum TMethods = {
+export enum TMethods {
     GET = "GET",
 
     POST = "POST",

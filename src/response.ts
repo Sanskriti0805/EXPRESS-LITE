@@ -1,105 +1,176 @@
+import { ServerResponse } from "http";
+import { mime } from "send";
+import statuses from "statuses";
+import { setCharset } from "./util";
+import Request from './request'
 
-const resPrototype: typeof ServerResponse = Object.create(http.ServerResponse.prototype);
-export default class Response extends resPrototype {}
+const resPrototype: typeof ServerResponse = Object.create(
+	ServerResponse.prototype,
+);
 
-  send=  (body:any, statusCode:number)=> {
-  var chunk = body;
-  var encoding;
-  var req = this.req;
-  var type;
+const charsetRegExp = /;\s*charset\s*=/;
 
-  // disambiguate res.send(status) and res.send(status, num)
-  if (typeof chunk === 'number' && arguments.length === 1) {
-    // res.send(status) will set status message as text string
-    if (!this.get('Content-Type')) {
-      this.type('txt');
-    }
+export default class Response extends resPrototype {
+  req: Request;
+  statusCode: number;
 
-    console.warn('res.send(status): Use res.sendStatus(status) instead');
-    this.statusCode = chunk;
-    chunk = statuses.message[chunk]
-  }
+	send = (body?: any, statusCode?: number) => {
+		let chunk = body;
+		let encoding;
+		const req = this.req;
+		let type;
 
-  switch (typeof chunk) {
-    // string defaulting to html
-    case 'string':
-      if (!this.get('Content-Type')) {
-        this.type('html');
-      }
-      break;
-    case 'boolean':
-    case 'number':
-    case 'object':
-      if (chunk === null) {
-        chunk = '';
-      } else if (Buffer.isBuffer(chunk)) {
-        if (!this.get('Content-Type')) {
-          this.type('bin');
-        }
-      } else {
-        return this.json(chunk);
-      }
-      break;
-  }
+		// disambiguate res.send(status) and res.send(status, num)
+		if (typeof chunk === "number" && statusCode === undefined) {
+			// res.send(status) will set status message as text string
+			if (!this.get("Content-Type")) {
+				this.type("txt");
+			}
 
-  // write strings in utf-8
-  if (typeof chunk === 'string') {
-    encoding = 'utf8';
-    type = this.get('Content-Type');
+			console.warn("res.send(status): Use res.sendStatus(status) instead");
+			this.statusCode = chunk;
+			chunk = statuses.message[chunk];
+		}
 
-    // reflect this in content-type
-    if (typeof type === 'string') {
-      this.set('Content-Type', setCharset(type, 'utf-8'));
-    }
-  }
+		switch (typeof chunk) {
+			// string defaulting to html
+			case "string":
+				if (!this.get("Content-Type")) {
+					this.type("html");
+				}
+				break;
+			case "boolean":
+			case "number":
+			case "object":
+				if (chunk === null) {
+					chunk = "";
+				} else if (Buffer.isBuffer(chunk)) {
+					if (!this.get("Content-Type")) {
+						this.type("bin");
+					}
+				} else {
+					return this.json(chunk);
+				}
+				break;
+		}
 
-  // determine if ETag should be generated
-  
-  // populate Content-Length
-  let len
-  if (chunk !== undefined) {
-    if (Buffer.isBuffer(chunk)) {
-      // get length of Buffer
-      len = chunk.length
-    } else if (!generateETag && chunk.length < 1000) {
-      // just calculate length when no ETag + small chunk
-      len = Buffer.byteLength(chunk, encoding)
-    } else {
-      // convert chunk to Buffer and calculate
-      chunk = Buffer.from(chunk, encoding)
-      encoding = undefined;
-      len = chunk.length
-    }
+		// write strings in utf-8
+		if (typeof chunk === "string") {
+			encoding = "utf8";
+			type = this.get("Content-Type");
 
-    this.set('Content-Length', len);
-  }
+			// reflect this in content-type
+			if (typeof type === "string") {
+				this.set("Content-Type", setCharset(type, "utf-8"));
+			}
+		}
 
- 
-  // freshness
-  if (req.fresh) this.statusCode = 304;
+		// determine if ETag should be generated
 
-  // strip irrelevant headers
-  if (204 === this.statusCode || 304 === this.statusCode) {
-    this.removeHeader('Content-Type');
-    this.removeHeader('Content-Length');
-    this.removeHeader('Transfer-Encoding');
-    chunk = '';
-  }
+		// populate Content-Length
+		let len;
+		if (chunk !== undefined) {
+			if (Buffer.isBuffer(chunk)) {
+				// get length of Buffer
+				len = chunk.length;
+			} else {
+				// convert chunk to Buffer and calculate
+				chunk = Buffer.from(chunk, encoding as BufferEncoding);
+				encoding = undefined;
+				len = chunk.length;
+			}
 
-  // alter headers for 205
-  if (this.statusCode === 205) {
-    this.set('Content-Length', '0')
-    this.removeHeader('Transfer-Encoding')
-    chunk = ''
-  }
+			this.set("Content-Length", len);
+		}
 
-  if (req.method === 'HEAD') {
-    // skip body for HEAD
-    this.end();
-  } else {
-    // respond
-    this.end(chunk, encoding);
-  }
+		// freshness
+		if (req.fresh) this.statusCode = 304;
 
-  return this;
-};
+		// strip irrelevant headers
+		if (204 === this.statusCode || 304 === this.statusCode) {
+			this.removeHeader("Content-Type");
+			this.removeHeader("Content-Length");
+			this.removeHeader("Transfer-Encoding");
+			chunk = "";
+		}
+
+		// alter headers for 205
+		if (this.statusCode === 205) {
+			this.set("Content-Length", "0");
+			this.removeHeader("Transfer-Encoding");
+			chunk = "";
+		}
+
+		if (req.method === "HEAD") {
+			// skip body for HEAD
+			this.end();
+		} else {
+			// respond
+			this.end(chunk, encoding as BufferEncoding);
+		}
+
+		return this;
+	};
+
+	get(field: string): string | number | string[] | undefined {
+		return this.getHeader(field);
+	}
+
+	type(type: string): this {
+		return this.contentType(type);
+	}
+
+	contentType = (type: string): this => {
+		const ct = type.indexOf("/") === -1 ? mime.lookup(type) : type;
+
+		return this.set("Content-Type", ct);
+	};
+
+	set(field: any): this;
+	set(field: string, value?: string | string[] | undefined): this;
+	set(field: any, val?: string | string[]): this {
+		if (field && val) {
+			let value = Array.isArray(val) ? val.map(String) : String(val);
+
+			// add charset to content-type
+			if (field.toLowerCase() === "content-type") {
+				if (Array.isArray(value)) {
+					throw new TypeError("Content-Type cannot be set to an Array");
+				}
+				if (!charsetRegExp.test(value)) {
+					// @TODO: Fix mime fallback types
+					const charset = mime.charsets.lookup(value.split(";")[0], "");
+					if (charset) value += `; charset=${charset.toLowerCase()}`;
+				}
+			}
+
+			this.setHeader(field, value);
+		} else {
+			for (const key in field) {
+				this.set(key, field[key]);
+			}
+		}
+		return this;
+	}
+
+	json = (body?: any, status?: number): this => {
+		const val = body;
+
+		// allow status / body
+		if (status) {
+			console.warn(
+				"res.json(obj, status): Use res.status(status).json(obj) instead",
+			);
+			this.statusCode = status;
+		}
+
+		const resBody = JSON.stringify(val);
+
+		// content-type
+		if (!this.get("Content-Type")) {
+			this.set("Content-Type", "application/json");
+		}
+
+		return this.send(resBody);
+	};
+}
