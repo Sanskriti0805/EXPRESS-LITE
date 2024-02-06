@@ -1,3 +1,4 @@
+
 import { TMethods } from "src/types";
 
 type GenericFunction = (...args: any[]) => any;
