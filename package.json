@@ -25,6 +25,7 @@
     "@types/content-type": "^1.1.8",
     "@types/fresh": "^0.5.2",
     "@types/mime": "^3.0.4",
+    "@types/path-to-regexp": "^1.7.0",
     "@types/send": "^0.17.4",
     "@types/statuses": "^2.0.4",
     "typescript": "^5.3.3"
