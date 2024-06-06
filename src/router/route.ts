@@ -42,16 +42,28 @@ class Route {
     return this.methods.map((method) => method.toUpperCase() as TMethods); // Multiple methods as uppercase array
   }
 
-  // dispatch:
-  async dispatch(req: request): Promise<Response> {
+ // dispatch:
+// dispatch:
+// dispatch:
+async dispatch(req: request): Promise<Response> {
     try {
-      return await this.callfunc(req);
+      // Call the user-provided callback function with the request object
+      const res = await this.callfunc(req);
+  
+      // Ensure the callfunc returns a Response object
+      if (!(res instanceof Response)) {
+        throw new Error("callfunc must return a Response object");
+      }
+  
+      return res;
     } catch (error) {
       console.error("Error in route dispatch:", error);
+  
+      // Construct the Response correctly with status code and message
       return new Response(500, { message: "Internal Server Error" });
     }
   }
-
+  
   // match:
   match(pathToMatch: string): boolean {
     if (!this.regexp) { 

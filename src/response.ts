@@ -13,7 +13,10 @@ const charsetRegExp = /;\s*charset\s*=/;
 export default class Response extends resPrototype {
   req: Request;
   statusCode: number;
+  body: any;
 
+ 
+  
 	send = (body?: any, statusCode?: number) => {
 		let chunk = body;
 		let encoding;
