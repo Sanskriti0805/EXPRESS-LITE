@@ -34,20 +34,13 @@ class Route {
     return this.methods.map((method) => method.toUpperCase() as TMethods);
   }
 
-  async dispatch(req: request): Promise<Response> {
+  async dispatch(req: request,res: Response) {
     try {
-      const res = await this.callfunc(req);
-
-      if (!(res instanceof Response)) {
-        throw new Error("callfunc must return a Response object");
-      }
-
-      return res;
+       this.callfunc(req,res); 
     } catch (error) {
       console.error("Error in route dispatch:", error);
       
-      // Pass `req` to the Response constructor
-      return new Response(req, 500, { message: "Internal Server Error" });
+     res.send(JSON.stringify({ message: "Internal Server Error" }), 500);
     }
   }
 

@@ -11,12 +11,6 @@ export default class Response extends ServerResponse {
   statusCode: number;
   body: any;
 
-  constructor(req: Request, statusCode: number, body: { message: string }) {
-    super(req);
-    this.req = req;
-    this.statusCode = statusCode;
-    this.body = body;
-  }
 
   send = (body?: any, statusCode?: number) => {
     let chunk = body;
