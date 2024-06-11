@@ -46,14 +46,6 @@ export class Router {
   }
 }
 
-class Route {
-  get: any;
-  constructor(
-    public method: string,
-    public path: string,
-    public callback: (req: Request, res: Response) => void
-  ) {}
-}
 
 // Example 
 const router = new Router();

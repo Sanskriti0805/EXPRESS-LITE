@@ -11,6 +11,7 @@ class Route {
   constructor(path: string, methods: TMethods | TMethods[], public callfunc: Function) {
     this.path = path;
     this.methods = methods;
+    this.regexp = pathToRegexp(this.path);
   }
 
   handlesMethod(method?: string): boolean {
@@ -46,24 +47,11 @@ class Route {
 
   match(pathToMatch: string): boolean {
     if (!this.regexp) {
-      this.regexp = pathToRegexp(this.path);
+      return false;
     }
 
-    const match = newFunction().exec(pathToMatch);
+    const match = this.regexp.exec(pathToMatch);
     return !!match;
-
-    function newFunction(this: any) {
-      return this.regexp;
-    }
-  }
-
-  static registers(router: any) {
-    const methods: TMethods[] = ['GET', 'POST', 'PUT', 'DELETE', 'ALL'] as TMethods[];
-    methods.forEach((method) => {
-      router[method.toLowerCase()] = function (path: string, callfunc: Function) {
-        router.routes.push(new Route(path, method, callfunc));
-      };
-    });
   }
 }
 
