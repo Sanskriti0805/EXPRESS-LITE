@@ -59,19 +59,19 @@ const router = new Router();
 
 router
   .route('/users')
-  .get((req, res) => {
+  .get((_req, res) => {
     // Handle GET /users
     res.send('GET /users');
   })
-  .post((req, res) => {
+  .post((_req, res) => {
     // Handle POST /users
     res.send('POST /users');
   })
-  .put((req, res) => {
+  .put((_req, res) => {
     // Handle PUT /users
     res.send('PUT /users');
   })
-  .delete((req, res) => {
+  .delete((_req, res) => {
     // Handle DELETE /users
     res.send('DELETE /users');
   });
