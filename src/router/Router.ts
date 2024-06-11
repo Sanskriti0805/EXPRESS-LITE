@@ -1,5 +1,13 @@
 import { Request, Response } from 'express';
-
+class Route {
+  get: any;
+  dispatch: any;
+  constructor(
+    public method: string,
+    public path: string,
+    public callback: (req: Request, res: Response) => void
+  ) {}
+}
 export class Router {
   private routes: Route[] = [];
 
@@ -24,7 +32,7 @@ export class Router {
 
     for (const route of this.routes) {
       if (route.method === method && route.path === url) {
-        route.callback(req, res);
+        route.dispatch(req, res);
         return;
       }
     }
@@ -45,7 +53,6 @@ export class Router {
     }
   }
 }
-
 
 // Example 
 const router = new Router();
