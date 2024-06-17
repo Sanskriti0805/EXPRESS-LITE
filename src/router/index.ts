@@ -1,37 +1,34 @@
-import { Request, Response } from 'express';
-class Route {
-  get: any;
-  dispatch: any;
-  constructor(
-    public method: string,
-    public path: string,
-    public callback: (req: Request, res: Response) => void
-  ) {}
-}
+import { TMethods } from "src/types";
+import  type Request from "../request";
+import  type Response from "../response";
+import Route from "./route";
 export class Router {
   private routes: Route[] = [];
 
-  get(path: string, callback: (req: Request, res: Response) => Promise<void> | void) {
-    this.routes.push(new Route('GET', path, callback));
+  get(path: string,
+     callback: (req: Request, res: Response) => Promise<void> | void) {
+    this.routes.push(new Route(path, TMethods.GET ,callback));
   }
 
-  post(path: string, callback: (req: Request, res: Response) => Promise<void> | void) {
-    this.routes.push(new Route('POST', path, callback));
+  post(path: string,
+     callback: (req: Request, res: Response) => Promise<void> | void) {
+    this.routes.push(new Route(path, TMethods.POST, callback));
   }
 
-  put(path: string, callback: (req: Request, res: Response) => Promise<void> | void) {
-    this.routes.push(new Route('PUT', path, callback));
+  put(path: string,
+     callback: (req: Request, res: Response) => Promise<void> | void) {
+    this.routes.push(new Route( path, TMethods.PUT, callback));
   }
 
   delete(path: string, callback: (req: Request, res: Response) => Promise<void> | void) {
-    this.routes.push(new Route('DELETE', path, callback));
+    this.routes.push(new Route( path, TMethods.DELETE, callback));
   }
 
   private handle_request(req: Request, res: Response) {
     const { method, url } = req;
 
     for (const route of this.routes) {
-      if (route.method === method && route.path === url) {
+      if (route.methods === method && route.match(url ?? "/")) {
         route.dispatch(req, res);
         return;
       }
@@ -42,10 +39,15 @@ export class Router {
   }
 
   route(path: string) {
-    return new Route('', path, () => {});
+    return new Route( path,TMethods.GET, () => {});
   }
 
-  handle(req: Request, res: Response, errorHandler: Function) {
+  handle(
+    req: Request,
+    res: Response, 
+    errorHandler:(error:Error, req: Request, res: Response)=>void,
+  )
+     {
     try {
       this.handle_request(req, res);
     } catch (error) {
@@ -75,6 +77,7 @@ router
     // Handle DELETE /users
     res.send('DELETE /users');
   });
+
 
 router.handle({ url: '/users', method: 'GET' } as Request, {} as Response, (err) => {
   console.error(err);

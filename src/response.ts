@@ -94,6 +94,7 @@ export default class Response extends ServerResponse {
 
     return this;
   };
+  status: any;
 
   get(field: string): string | number | string[] | undefined {
     return this.getHeader(field);
