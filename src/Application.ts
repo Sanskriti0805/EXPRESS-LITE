@@ -23,11 +23,20 @@ class Application extends Server {
       }
       return Application.instance;
     }
-  
-    listen(...args: any[]) {
-      const server = http.createServer(this);
-      server.addListener("request", this.handler.bind(this));
-      return server.listen.apply(server, args);
+      
+    listen(...args: any[]): Promise<void> {
+        const server = http.createServer(this);
+        server.addListener("request", this.handler.bind(this));
+      
+        return new Promise((resolve, reject) => {
+          server.listen(...args, (error?: Error) => {
+            if (error) {
+              reject(error);
+            } else {
+              resolve(); // Server listening successfully
+            }
+          });
+        });
     }
   
     handler(req: Request, res: Response) {

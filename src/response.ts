@@ -3,6 +3,7 @@ import { mime } from "send";
 import statuses from "statuses";
 import { setCharset } from "./util";
 import Request from './request';
+import { response } from "express";
 
 const charsetRegExp = /;\s*charset\s*=/;
 
@@ -11,12 +12,22 @@ export default class Response extends ServerResponse {
   statusCode: number;
   body: any;
 
+  converter(res: ServerResponse){
+    const convertedRes = res as Response;
+    convertedRes.send = Response.prototype.send.bind(convertedRes);
+    convertedRes.status = Response.prototype.status.bind(convertedRes);
+    convertedRes.type = Response.prototype.type.bind(convertedRes);
+    convertedRes.set = Response.prototype.set.bind(convertedRes);
+    convertedRes.json = Response.prototype.json.bind(convertedRes);
+    convertedRes.get = Response.prototype.get.bind(convertedRes);
+    convertedRes.contentType = Response.prototype.contentType.bind(convertedRes);
+  }
 
   send = (body?: any, statusCode?: number) => {
     let chunk = body;
     let encoding;
     const req = this.req;
-    let type;
+    let type:unknown;
 
     if (typeof chunk === "number" && statusCode === undefined) {
       if (!this.get("Content-Type")) {
