@@ -41,11 +41,11 @@ class Application extends Server {
   
     handler(req: Request, res: Response) {
       const errorHandler = this.errorHandler || this.defaultErrorHandler;
-      const router = this.router ?? new Router(); // Use nullish coalescing operator
+      const router = this.router ?? new Router(); 
       router.handle(req, res, errorHandler);
     }
   
-    defaultErrorHandler(error: Error, req: Request, res: Response) {
+    defaultErrorHandler(error: Error, _req: Request, res: Response) {
       console.error("Error in route dispatch:", error);
       res.status(500).send({ message: "Internal Server Error" });
     }
@@ -57,7 +57,7 @@ class Application extends Server {
     }
   
     public get(path: string, callback: (req: Request, res: Response) => void) {
-      this.lazyRouter(); // Ensure router is initialized before adding route
+      this.lazyRouter(); // Ensuring router is initialized before adding route
       this.router.get(path, callback);
     }
   
