@@ -4,7 +4,7 @@ import request from "../request";
 import { pathToRegexp } from "path-to-regexp";
 
 class Route {
-  get(arg0: (_req: any, res: any) => void) {
+  get(_arg0: (_req: any, res: any) => void) {
     throw new Error("Method not implemented.");
   }
   public path: string;

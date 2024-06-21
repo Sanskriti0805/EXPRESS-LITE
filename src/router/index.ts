@@ -78,11 +78,10 @@ router
     res.send('DELETE /users');
   });
 
-
-router.handle({ url: '/users', method: 'GET' } as Request, {} as Response, (err) => {
-  console.error(err);
-});
-
+router.handle({ url: '/users', method: 'POST' } as Request, {} as Response, (err) => {
+    console.error(err);
+  });
+  
 router.handle({ url: '/users', method: 'POST' } as Request, {} as Response, (err) => {
   console.error(err);
 });
