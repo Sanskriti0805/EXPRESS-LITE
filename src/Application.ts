@@ -12,11 +12,10 @@ class Application extends Server {
 
   static getInstance(input: {
     errorHandler?: (error: Error, req: Request, res: Response) => void;
-    args?: unknown[];
-  }) {
+     }) {
     if (!Application.instance) {
       Application.instance = new Application();
-      Application.instance.listen(input.args);
+      
       if (input.errorHandler) {
         Application.instance.errorHandler = input.errorHandler;
       }
