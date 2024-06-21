@@ -1,34 +1,35 @@
-import { TMethods } from "src/types";
-import  type Request from "../request";
-import  type Response from "../response";
+import { TMethods } from "../types";
+import type Request from "../request";
+import type Response from "../response";
 import Route from "./route";
 export class Router {
   private routes: Route[] = [];
 
   get(path: string,
      callback: (req: Request, res: Response) => Promise<void> | void) {
-    this.routes.push(new Route(path, TMethods.GET ,callback));
+    this.routes.push(new Route(path, [TMethods.GET] ,callback));
+
   }
 
   post(path: string,
      callback: (req: Request, res: Response) => Promise<void> | void) {
-    this.routes.push(new Route(path, TMethods.POST, callback));
+    this.routes.push(new Route(path, [TMethods.POST], callback));
   }
 
   put(path: string,
      callback: (req: Request, res: Response) => Promise<void> | void) {
-    this.routes.push(new Route( path, TMethods.PUT, callback));
+    this.routes.push(new Route( path, [TMethods.PUT], callback));
   }
 
   delete(path: string, callback: (req: Request, res: Response) => Promise<void> | void) {
-    this.routes.push(new Route( path, TMethods.DELETE, callback));
+    this.routes.push(new Route( path, [TMethods.DELETE], callback));
   }
 
   private handle_request(req: Request, res: Response) {
     const { method, url } = req;
 
     for (const route of this.routes) {
-      if (route.methods === method && route.match(url ?? "/")) {
+      if (route.handlesMethod(method) && route.match(url ?? "/")) {
         route.dispatch(req, res);
         return;
       }
@@ -39,7 +40,7 @@ export class Router {
   }
 
   route(path: string) {
-    return new Route( path,TMethods.GET, () => {});
+    return new Route(path, [TMethods.GET], () => {});
   }
 
   handle(

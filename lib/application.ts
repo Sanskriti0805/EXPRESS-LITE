@@ -1,6 +1,6 @@
 import { Server } from "http";
 import type Request from "./request";
-import type Response from "./response";
+import Response from "./response";
 import { Router } from "./router";
 import http from "http";
 import type net from "net";
@@ -43,14 +43,13 @@ class Application extends Server {
   listen(...args: any[]) {
     const server = http.createServer(this);
     server.addListener("request", this.handler.bind(this));
-
-
     return server.listen.apply(server, args);
   }
 
   handler(req: Request, res: Response) {
     const errorHandler = this.errorHandler || this.defaultErrorHandler;
     const router = this.router ?? new Router();
+    Response.extend(res);
     router.handle(req, res, errorHandler);
   }
 

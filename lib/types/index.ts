@@ -6,4 +6,6 @@ export enum TMethods {
     DELETE = "DELETE",
 
     PUT = "PUT",
+
+    ALL = "ALL"
 }

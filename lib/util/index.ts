@@ -7,7 +7,6 @@ export function setCharset(type: string, charset: string): string {
 
   // parse type
   const parsed = contentType.parse(type);
-
   // set charset
   parsed.parameters.charset = charset;
 

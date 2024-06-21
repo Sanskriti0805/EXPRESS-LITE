@@ -11,18 +11,21 @@ export default class Response extends ServerResponse {
   statusCode: number;
   body: any;
 
-  converter(res: ServerResponse){
-    const convertedRes = res as Response;
-    convertedRes.send = Response.prototype.send.bind(convertedRes);
-    convertedRes.status = Response.prototype.status.bind(convertedRes);
-    convertedRes.type = Response.prototype.type.bind(convertedRes);
-    convertedRes.set = Response.prototype.set.bind(convertedRes);
-    convertedRes.json = Response.prototype.json.bind(convertedRes);
-    convertedRes.get = Response.prototype.get.bind(convertedRes);
-    convertedRes.contentType = Response.prototype.contentType.bind(convertedRes);
+  status(statusCode: number) {
+    this.statusCode = statusCode;
+    return this;
+  }
+  static extend(res: Response){
+    res.send = Response.prototype.send.bind(res);
+    res.status = Response.prototype.status.bind(res);
+    res.type = Response.prototype.type.bind(res);
+    res.set = Response.prototype.set.bind(res);
+    res.json = Response.prototype.json.bind(res);
+    res.get = Response.prototype.get.bind(res);
+    res.contentType = Response.prototype.contentType.bind(res);
   }
 
-  send = (body?: any, statusCode?: number) => {
+  send(body?: any, statusCode?: number) {
     let chunk = body;
     let encoding;
     const req = this.req;
@@ -104,7 +107,6 @@ export default class Response extends ServerResponse {
 
     return this;
   };
-  status: any;
 
   get(field: string): string | number | string[] | undefined {
     return this.getHeader(field);
@@ -114,7 +116,7 @@ export default class Response extends ServerResponse {
     return this.contentType(type);
   }
 
-  contentType = (type: string): this => {
+  contentType(type: string): this {
     const ct = type.indexOf("/") === -1 ? mime.lookup(type) : type;
     return this.set("Content-Type", ct);
   };
@@ -144,7 +146,7 @@ export default class Response extends ServerResponse {
     return this;
   }
 
-  json = (body?: any, status?: number): this => {
+  json(body?: any, status?: number): this {
     const val = body;
 
     if (status) {
