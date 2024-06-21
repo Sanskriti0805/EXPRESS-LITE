@@ -3,7 +3,7 @@ import { mime } from "send";
 import statuses from "statuses";
 import { setCharset } from "./util";
 import Request from './request';
-import { response } from "express";
+import  response  from "express";
 
 const charsetRegExp = /;\s*charset\s*=/;
 
