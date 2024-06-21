@@ -64,10 +64,12 @@ router
   .get((_req, res) => {
     // Handle GET /users
     res.send('GET /users');
+    
   })
-  .post((_req, res) => {
+ .post((_req, res) => {
     // Handle POST /users
     res.send('POST /users');
+   
   })
   .put((_req, res) => {
     // Handle PUT /users
