@@ -9,6 +9,9 @@ const reqPrototype: typeof IncomingMessage = Object.create(
 
 export default class Request extends reqPrototype {
     res: Response
+  body: any;
+  
+  params: any;
 
 	public header(name: string) {
 		const lc = name.toLowerCase();
