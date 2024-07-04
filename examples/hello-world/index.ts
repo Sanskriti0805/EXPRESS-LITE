@@ -18,23 +18,23 @@ app.get("/", (req, res) => {
   res.send("Hello, World!");
 });
 
-app.post("/submit", (req, res) => {
-  const data = req.body;
-  console.log("Received data:", data);
-  res.send("Data received successfully");
+app.post("/users", (req, res) => {
+  const UserData = req.body;
+  console.log("Received data:", UserData);
+  res.send("User data received successfully");
 });
 
 app.put("/update/:id", (req, res) => {
-  const id = req.params.id;
+  const UserId = req.params.id;
   const newData = req.body;
-  console.log(`Updating record with ID: ${id}`, newData);
-  res.send(`Record with ID: ${id} updated successfully`);
+  console.log(`Updating record with ID: ${UserId}`, newData);
+  res.send(`Record with ID: ${UserId} updated successfully`);
 });
 
 app.delete("/delete/:id", (req, res) => {
-  const id = req.params.id;
-  console.log(`Deleting record with ID: ${id}`);
-  res.send(`Record with ID: ${id} deleted successfully`);
+  const UserId = req.params.id;
+  console.log(`Deleting record with ID: ${UserId}`);
+  res.send(`Record with ID: ${UserId} deleted successfully`);
 });
 
 app.listen(3000, () => {
