@@ -6,6 +6,9 @@ import http from "http";
 import type net from "net";
 
 class Application extends Server {
+  use(arg0: any) {
+    throw new Error("Method not implemented.");
+  }
   private static instance: Application;
   private router: Router;
   private errorHandler: (error: Error, req: Request, res: Response) => void;
